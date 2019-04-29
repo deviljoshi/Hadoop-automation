@@ -1,0 +1,65 @@
+- hosts: all
+  tasks:  
+   - copy:
+       src: /root/Desktop/softwares/jdk-8u171-linux-x64.rpm
+       dest: /root/jdk-8u171-linux-x64.rpm
+
+   
+   - copy:
+       src: /root/Desktop/softwares/hadoop-1.2.1-1.x86_64.rpm 
+       dest: /root/hadoop-1.2.1-1.x86_64.rpm
+   
+   - command: "firewall-cmd --add-port=0-65535/tcp --permanent"   
+   - command: "firewall-cmd --add-port=0-65535/udp --permanent"
+   - command: "rpm -ivh /root/jdk-8u171-linux-x64.rpm"
+   - command: "echo 'export JAVA_HOME=/usr/java/jdk1.8.0_171-amd64/' >> /root/.bashrc"
+   - command: "echo 'export PATH=/usr/java/jdk1.8.0_171-amd64/bin:$PATH' >> /root/.bashrc"       
+   - command: "rpm -ivh /root/hadoop-1.2.1-1.x86_64.rpm --force" 
+
+   - copy:
+       src: /root/Desktop/pythoncode/hadoop/j_m_c_s_corefile.xml
+       dest: /etc/hadoop/core-site.xml
+   
+
+
+- hosts: m
+  tasks:
+   - copy:
+       src: /root/Desktop/pythoncode/hadoop/masterhdfsfile.xml
+       dest: /etc/hadoop/hdfs-site.xml
+   - command: "mkdir /etc/hadoop/mydata"
+   - command: "hadoop namenode -format"
+   - command: "hadoop-daemon.sh start namenode"
+           
+- hosts: jt
+  tasks:
+   - copy: 
+       src: /root/Desktop/pythoncode/hadoop/j_t_c_mapred.xml 
+       dest: /etc/hadoop/mapred-site.xml
+   - command: "hadoop-daemon.sh start jobtracker"
+
+- hosts: st
+  tasks:
+   - copy: 
+       src: /root/Desktop/pythoncode/hadoop/slavehdfsfile.xml
+       dest: /etc/hadoop/hdfs-site.xml
+   - command: "mkdir /etc/hadoop/data"
+   - command: "hadoop-daemon.sh start datanode"
+    
+   - copy:
+       src: /root/Desktop/pythoncode/hadoop/j_t_c_mapred.xml
+       dest: /etc/hadoop/mapred-site.xml
+   - command: "hadoop-daemon.sh start tasktracker"
+
+- hosts: c
+  tasks:
+   - copy: 
+       src: /root/Desktop/pythoncode/hadoop/j_t_c_mapred.xml
+       dest: /etc/hadoop/mapred-site.xml
+
+
+
+
+
+
+
